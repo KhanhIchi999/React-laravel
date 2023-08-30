@@ -3,6 +3,7 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { NavLink, Navigate, Outlet } from 'react-router-dom'
 import { userStateContext } from '../../contexts/ContextProvider'
+import axiosClient from '../../aoxios'
 
 const user = {
   name: 'Tom Cook',
@@ -10,6 +11,7 @@ const user = {
   imageUrl:
     'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
+
 const navigation = [
   { name: 'Dashboard', to: '/dashboard', current: false },
   { name: 'Surveys', to: '/surveys', current: false },
@@ -20,19 +22,23 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-function logout(e){
-  e.preventDefault();
-  console.log("logout")
-}
 
 export default function DefaultLayout() {
 
-  const {currentUser, userToken} = userStateContext();
-
+  const {currentUser, userToken, setCurrentUser, setUserToken} = userStateContext();
+  
   if(!userToken) {
     return <Navigate to='login' />
   }
 
+  const logout = (ev) => {
+    ev.preventDefault();
+    axiosClient.post("/logout").then((res) => {
+      setCurrentUser({});
+      setUserToken(null);
+    });
+  };
+  
 
   return (
     <>
